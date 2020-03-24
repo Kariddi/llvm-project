@@ -34,6 +34,7 @@
 #include "llvm/Support/ErrorHandling.h"
 #include <cassert>
 #include <cstdint>
+#include <memory>
 #include <utility>
 
 namespace llvm {
@@ -59,7 +60,7 @@ class VirtRegMap;
     AliasAnalysis *AA;
     SlotIndexes* Indexes;
     MachineDominatorTree *DomTree = nullptr;
-    LiveIntervalCalc *LICalc = nullptr;
+    std::unique_ptr<LiveIntervalCalc> LICalc;
 
     /// Special pool allocator for VNInfo's (LiveInterval val#).
     VNInfo::Allocator VNInfoAllocator;
@@ -99,7 +100,6 @@ class VirtRegMap;
     static char ID;
 
     LiveIntervals();
-    ~LiveIntervals() override;
 
     /// Calculate the spill weight to assign to a single instruction.
     static float getSpillWeight(bool isDef, bool isUse,

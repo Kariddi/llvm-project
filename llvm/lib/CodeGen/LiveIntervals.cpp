@@ -101,8 +101,6 @@ LiveIntervals::LiveIntervals() : MachineFunctionPass(ID) {
   initializeLiveIntervalsPass(*PassRegistry::getPassRegistry());
 }
 
-LiveIntervals::~LiveIntervals() { delete LICalc; }
-
 void LiveIntervals::releaseMemory() {
   // Free the live intervals themselves.
   for (unsigned i = 0, e = VirtRegIntervals.size(); i != e; ++i)
@@ -130,7 +128,7 @@ bool LiveIntervals::runOnMachineFunction(MachineFunction &fn) {
   DomTree = &getAnalysis<MachineDominatorTree>();
 
   if (!LICalc)
-    LICalc = new LiveIntervalCalc();
+    LICalc.reset(std::make_unique<LiveIntervalCalc>());
 
   // Allocate space for all virtual registers.
   VirtRegIntervals.resize(MRI->getNumVirtRegs());
